@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+</head>
+
+<body>
+
+    <textarea id="text" onkeydown="resize(this)" onkeyup="resize(this)" placeholder="html 코드를 입력해주세요."
+       spellcheck="false" style="width: 100%; min-height: 200px; background-color: rgba(21, 114, 236, 0.212);"></textarea><br />
+    <div class="wrapper" style="text-align: center;">
+        <button class="button" type="button" onclick="addAltTag()"> alt 태그 추가 </button>
+    </div>
+    <p id="p" style="padding: 4px;background-color:rgba(21, 114, 236, 0.212);"></p>
+
+    <style>
+        .button {
+            background-color: #008CBA;
+            border: none;
+            color: white;
+            padding: 7px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            margin: 4px 2px;
+            cursor: pointer;
+        }
+    </style>
+
+    <script>
+        function addAltTag() {
+            var text = document.getElementById("text")
+            var value = text.value.replace(/]\[\#\#_Image/gi, "]</p><p>[\#\#_Image")
+
+            document.getElementById("p").innerHTML = value
+            var imgList = document.getElementById("p").getElementsByTagName("p")
+
+            if (imgList.length != 0) {
+                for (var i = 0; i < imgList.length; i++) {
+                    var html = imgList[i].innerHTML
+
+                    if (html.includes("[\#\#_Image|") || html.includes("[\#\#_ImageGrid|")) {
+                        if (html.includes("[\#\#_ImageGrid|")) {
+                            var altContent = html.split("|")[3]
+                            altContent = altContent.substring(0, altContent.indexOf("_##"))
+                        } else {
+                            var altContent = html.split("|")[4]
+                        }
+
+                        if (html.includes("[\#\#_ImageGrid|")) {
+                            var imgSplit = html.split("|")[2].split(",")
+                            for (var j = 0; j < imgSplit.length; j++) {
+                                if (imgSplit[j].includes("alt=\"")) {
+                                    value = value.replace(imgSplit[j], imgSplit[j].replace(/alt=\".+data-origin-width="/gi, "alt=\"" + altContent + "\" data-origin-width=\""))
+                                } else {
+                                    value = value.replace(imgSplit[j], imgSplit[j].replace(/data-origin-width/gi, "alt=\"" + altContent + "\" data-origin-width"))
+                                }
+                            }
+                        } else {
+                            if (html.split("|")[3].includes("alt=\"")) {
+                                value = value.replace(html, html.replace(/alt=\".+data-origin-width="/gi, "alt=\"" + altContent + "\" data-origin-width=\""))
+                            } else {
+                                value = value.replace(html, html.replace(/data-origin-width/gi, "alt=\"" + altContent + "\" data-origin-width"))
+                            }
+                        }
+                    }
+                }
+                document.getElementById("p").innerText = value
+            } else {
+                document.getElementById("p").innerText = text.value
+            }
+
+        }
+
+        function resize(obj) {
+            obj.style.height = "1px";
+            obj.style.height = (12 + obj.scrollHeight) + "px";
+        }
+    </script>
+</body>
+
+</html>
