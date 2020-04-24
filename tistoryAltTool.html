@@ -7,12 +7,13 @@
 
 <body>
 
-    <textarea id="text" onkeydown="resize(this)" onkeyup="resize(this)" placeholder="html 코드를 입력해주세요."
-       spellcheck="false" style="width: 100%; min-height: 200px; background-color: rgba(21, 114, 236, 0.212);"></textarea><br />
+    <textarea id="inputText" onkeydown="resize(this)" onkeyup="resize(this)" placeholder="html 코드를 입력해주세요."
+        spellcheck="false"
+        style="width: 100%; min-height: 200px; background-color: rgba(21, 114, 236, 0.212);"></textarea><br />
     <div class="wrapper" style="text-align: center;">
-        <button class="button" type="button" onclick="addAltTag()"> alt 태그 추가 </button>
+        <button id="addAltTagButton" class="button" type="button"> alt 태그 추가 </button>
     </div>
-    <p id="p" style="padding: 4px;background-color:rgba(21, 114, 236, 0.212);"></p>
+    <pre id="viewAltTag" style="padding: 4px;background-color:rgba(21, 114, 236, 0.212);color: #000;"></pre>
 
     <style>
         .button {
@@ -30,49 +31,53 @@
     </style>
 
     <script>
-        function addAltTag() {
-            var text = document.getElementById("text")
-            var value = text.value.replace(/]\[\#\#_Image/gi, "]</p><p>[\#\#_Image")
+        window.onload = function () {
+            document.getElementById("addAltTagButton").onclick = function () {
+                var text = document.getElementById("inputText")
+                var value = text.value.replace(/]\[\#\#_Image/gi, "]</p><p>[\#\#_Image")
 
-            document.getElementById("p").innerHTML = value
-            var imgList = document.getElementById("p").getElementsByTagName("p")
+                console.log(value);
+                console.log(document.getElementById("viewAltTag"))
+                document.getElementById("viewAltTag").innerHTML = value
+                var imgList = document.getElementById("viewAltTag").getElementsByTagName("p")
 
-            if (imgList.length != 0) {
-                for (var i = 0; i < imgList.length; i++) {
-                    var html = imgList[i].innerHTML
+                if (imgList.length != 0) {
+                    for (var i = 0; i < imgList.length; i++) {
+                        var html = imgList[i].innerHTML
 
-                    if (html.includes("[\#\#_Image|") || html.includes("[\#\#_ImageGrid|")) {
-                        if (html.includes("[\#\#_ImageGrid|")) {
-                            var altContent = html.split("|")[3]
-                            altContent = altContent.substring(0, altContent.indexOf("_##"))
-                        } else {
-                            var altContent = html.split("|")[4]
-                        }
-
-                        if (html.includes("[\#\#_ImageGrid|")) {
-                            var imgSplit = html.split("|")[2].split(",")
-                            for (var j = 0; j < imgSplit.length; j++) {
-                                if (imgSplit[j].includes("alt=\"")) {
-                                    value = value.replace(imgSplit[j], imgSplit[j].replace(/alt=\".+data-origin-width="/gi, "alt=\"" + altContent + "\" data-origin-width=\""))
-                                } else {
-                                    value = value.replace(imgSplit[j], imgSplit[j].replace(/data-origin-width/gi, "alt=\"" + altContent + "\" data-origin-width"))
-                                }
-                            }
-                        } else {
-                            if (html.split("|")[3].includes("alt=\"")) {
-                                value = value.replace(html, html.replace(/alt=\".+data-origin-width="/gi, "alt=\"" + altContent + "\" data-origin-width=\""))
+                        if (html.includes("[\#\#_Image|") || html.includes("[\#\#_ImageGrid|")) {
+                            if (html.includes("[\#\#_ImageGrid|")) {
+                                var altContent = html.split("|")[3]
+                                altContent = altContent.substring(0, altContent.indexOf("_##"))
                             } else {
-                                value = value.replace(html, html.replace(/data-origin-width/gi, "alt=\"" + altContent + "\" data-origin-width"))
+                                var altContent = html.split("|")[4]
+                            }
+
+                            if (html.includes("[\#\#_ImageGrid|")) {
+                                var imgSplit = html.split("|")[2].split(",")
+                                for (var j = 0; j < imgSplit.length; j++) {
+                                    if (imgSplit[j].includes("alt=\"")) {
+                                        value = value.replace(imgSplit[j], imgSplit[j].replace(/alt=\".+data-origin-width="/gi, "alt=\"" + altContent + "\" data-origin-width=\""))
+                                    } else {
+                                        value = value.replace(imgSplit[j], imgSplit[j].replace(/data-origin-width/gi, "alt=\"" + altContent + "\" data-origin-width"))
+                                    }
+                                }
+                            } else {
+                                if (html.split("|")[3].includes("alt=\"")) {
+                                    value = value.replace(html, html.replace(/alt=\".+data-origin-width="/gi, "alt=\"" + altContent + "\" data-origin-width=\""))
+                                } else {
+                                    value = value.replace(html, html.replace(/data-origin-width/gi, "alt=\"" + altContent + "\" data-origin-width"))
+                                }
                             }
                         }
                     }
+                    document.getElementById("viewAltTag").innerText = value
+                } else {
+                    document.getElementById("viewAltTag").innerText = text.value
                 }
-                document.getElementById("p").innerText = value
-            } else {
-                document.getElementById("p").innerText = text.value
-            }
 
-        }
+            }
+        };
 
         function resize(obj) {
             obj.style.height = "1px";
