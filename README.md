@@ -1,3 +1,3 @@
 # tistoryAltTool
 ![Image](./image.jpg)
-https://minikupa.com/95
+https://minikupa-dev.tistory.com/95
